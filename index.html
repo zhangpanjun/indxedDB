@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>indexDB操作</title>
+    <script src="indexDB.js"></script>
+</head>
+<style>
+    .btn {
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+</style>
+<body>
+    <div>indexDB操作</div>
+    <button class='btn' id="openBtn">打开数据库</button><br />
+    <button class='btn' id="addBtn">插入数据</button><br />
+    <button class='btn' id="getDataByKeyBtn">通过主键获取数据</button><br style='margin:10px'/>
+    <button class='btn' id="getAllDataBtn">直接获取某个仓的所有数据</button><br style='margin:10px'/>
+    <button class='btn' id="getAllDataByCursorBtn">通过游标来获取某个仓的所有数据</button><br style='margin:10px'/>
+    <button class='btn' id="getFirstDataByIndexBtn">根据索引查询符合条件第一条数据</button><br style='margin:10px'/>
+    <button class='btn' id="getAllDataByIndexBtn">根据索引查询符合条件所有数据</button><br style='margin:10px'/>
+    <button class='btn' id="getDataByCursorBtn">通过游标挨个遍历 查询出符合某条件下的所有数据 </button><br style='margin:10px'/>
+    <button class='btn' id="getDataByIndexAndCursorRangeBtn">根据索引+游标指定查询范围 查询符合条件所有数据</button><br style='margin:10px'/>
+    <button class='btn' id="getFirstPageDataByIndexAndCursorRange">根据索引+游标指定查询范围 分页查询符合条件的第一页数据 </button><br style='margin:10px'/>
+    <button class='btn' id="getOtherPageDataByIndexAndCursorRange">根据索引+游标指定查询范围 分页查询符合条件的第100页数据</button><br style='margin:10px'/>
+    <button class='btn' id="updateDataByKeyBtn">通过主键更新数据</button><br style='margin:10px'/>
+    <button class='btn' id="deleteDataByKeyBtn">通过主键删除数据</button><br style='margin:10px'/>
+    <button class='btn' id="deleteDataByIndexAndCursorBtn">通过索引+游标删除数据后 输出剩余数据</button><br style='margin:10px'/>
+    <button class='btn' id="delBtn">关闭并删除数据库</button><br style='margin:10px'/>
+</body>
+
+<script>
+    let dbInstance;
+    // 创建数据库
+    let openBtn = document.getElementById('openBtn')
+    openBtn.onclick = function () {
+        openDB('class',1).then((db) => {
+            dbInstance = db
+        })
+    }
+     // 插入数据
+    let addBtn = document.getElementById('addBtn')
+    addBtn.onclick = function () {
+        const uniqueId = 'id-' + new Date().getTime().toString(36) + '-' + Math.random().toString(36).substr(2, 9);
+        addData(dbInstance,'users',{id:uniqueId,name:'张三',age:Math.floor(Math.random() * 100),score: 100})
+    }
+
+    // 通过主键获取数据
+    let getDataByKeyBtn = document.getElementById('getDataByKeyBtn')
+    getDataByKeyBtn.onclick = function () {
+        getDataByKey(dbInstance,'users','id-m0xa3xsi-peb29bp5u')
+    }
+
+    // 直接获取某个仓的所有数据
+    let getAllDataBtn = document.getElementById('getAllDataBtn')
+    getAllDataBtn.onclick = function () {
+        getAllData(dbInstance,'users')
+    }
+
+    // 通过游标来获取某个仓的所有数据
+    let getAllDataByCursorBtn = document.getElementById('getAllDataByCursorBtn')
+    getAllDataByCursorBtn.onclick = function () {
+        getAllDataByCursor(dbInstance,'users')
+    }
+    // 根据索引查询符合条件第一条数据
+    let getFirstDataByIndexBtn = document.getElementById('getFirstDataByIndexBtn')
+    getFirstDataByIndexBtn.onclick = function () {
+        getFirstDataByIndex(dbInstance,'users','age',52)
+    }
+    // 根据索引查询符合条件所有数据
+    let getAllDataByIndexBtn = document.getElementById('getAllDataByIndexBtn')
+    getAllDataByIndexBtn.onclick = function () {
+        getAllDataByIndex(dbInstance,'users','age',52)
+    }
+    // 通过游标挨个遍历 查询出符合某条件下的所有数据 (超级不推荐！！！！，数据量多的时候挨个敲门很消耗性能，推荐索引+游标结合查询方式)
+    let getDataByCursorBtn = document.getElementById('getDataByCursorBtn')
+    getDataByCursorBtn.onclick = function () {
+        getDataByCursor(dbInstance,'users','age',52)
+    }
+    // 根据索引+游标指定查询范围 查询符合条件所有数据
+    let getDataByIndexAndCursorRangeBtn = document.getElementById('getDataByIndexAndCursorRangeBtn')
+    getDataByIndexAndCursorRangeBtn.onclick = function () {
+        getDataByIndexAndCursorRange(dbInstance,'users','age',52)
+    }
+    // 根据索引+游标指定查询范围 分页查询符合条件的第一页数据
+    let getFirstPageDataByIndexAndCursorRange = document.getElementById('getFirstPageDataByIndexAndCursorRange')
+    getFirstPageDataByIndexAndCursorRange.onclick = function () {
+        getPageDataByIndexAndCursorRange(dbInstance,'users','name','张三',10,1)
+    }
+    // 根据索引+游标指定查询范围 分页查询符合条件的第二页数据
+    let getOtherPageDataByIndexAndCursorRange = document.getElementById('getOtherPageDataByIndexAndCursorRange')
+    getOtherPageDataByIndexAndCursorRange.onclick = function () {
+        getPageDataByIndexAndCursorRange(dbInstance,'users','name','张三',10,100)
+    }
+    // 通过主键更新数据
+    let updateDataByKeyBtn = document.getElementById('updateDataByKeyBtn')
+    updateDataByKeyBtn.onclick = function () {
+        updateDataByKey(dbInstance,'users',{id:'id-m0urgr1f-l7k12bisf',name:'李四',age:10})
+    }
+    // 通过主键删除数据
+    let deleteDataByKeyBtn = document.getElementById('deleteDataByKeyBtn')
+    deleteDataByKeyBtn.onclick = function () {
+        deleteDataByKey(dbInstance,'users','id-m0urgr1f-l7k12bisf')
+    }
+    // 通过索引+游标删除数据后 输出剩余数据
+    let deleteDataByIndexAndCursorBtn = document.getElementById('deleteDataByIndexAndCursorBtn')
+    deleteDataByIndexAndCursorBtn.onclick = function () {
+        deleteDataByIndexAndCursor(dbInstance,'users','name','张三',()=>getAllData(dbInstance,'users'))
+    }
+
+    // 如果数据库有事务被引用，就算调用删除数据库也不会被删除，需要先把数据库close后，再删除数据库
+    let delBtn = document.getElementById('delBtn')
+    delBtn.onclick = function () {
+        closeDB(dbInstance)
+        deleteDataBase('class')
+    }
+
+</script>
+</html>
