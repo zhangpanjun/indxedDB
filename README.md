@@ -4,3 +4,5 @@
 # 注意！！！ 
  1.代码中插入的id,age等字段的值是随机生成的，在一些查询方法中请更改对应值，再执行。
  2.如本地更改代码保存后控制台报  Uncaught TypeError: Cannot read properties of undefined (reading 'transaction')  ，是因为页面被重新自动加载找不到全局dbInstance数据库实例，只需重新点击打开数据库，再执行其他操作按钮即可。
+ # 关于indexedDB可以查看自己的博客（有所帮助的话，记得点赞收藏哟~）
+ 地址： https://blog.csdn.net/zhangpanjun/article/details/142139811
